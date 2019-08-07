@@ -26,7 +26,7 @@ function do_scroll(delta) {
     console.log(sections);
     function section_from_element(section) { return section.parentNode; }
 
-    var curPos = -1;
+    var curPos = -10;
     for(i=0; i<sections.size(); i++) {
 	//if ( window.pageYOffset < sections[i].getBoundingClientRect()["top"] ) {
         //console.log(sections[i], sections[i].getBoundingClientRect()["top"])
@@ -44,7 +44,7 @@ function do_scroll(delta) {
     console.log("cur=", curPos);
 
     // We didn't find anything - we would scroll off the bottom.
-    if (curPos == -1) {
+    if (curPos == -10) {
 	curPos = sections.size() - 1;
     }
 
@@ -52,17 +52,25 @@ function do_scroll(delta) {
     var targetPos = curPos + delta;
     console.log("target=", targetPos);
 
+    // If we ask for -1, go directly to the top
+    if ( targetPos == -1 ) {
+	var targetSection = $("body")
+    } else if ( targetPos < 0 || targetPos > (sections.size()-1) ) {
     // if we would scroll past bottom, or above top, do nothing
-    if ( targetPos < 0 || targetPos > (sections.size()-1) ) {
         return;
+    } else {
+	console.log('xxxxxx');
+	var targetSection = sections[targetPos];
+	var targetSection = section_from_element(targetSection);
     }
-
-    var targetSection = sections[targetPos];
-    var targetSection = section_from_element(targetSection);
+    console.log(targetSection, typeof(targetSection));
 
     //var top = targetSection.getBoundingClientRect()["y"];
     var top = $(targetSection).offset()["top"];
-    var height = targetSection.getBoundingClientRect()["height"];
+    if (targetSection.getBoundingClientRect)
+	var height = targetSection.getBoundingClientRect()["height"] || 0;
+    else
+	var height = 0;
     var win_height = window.innerHeight;
     //console.info(top, height, win_height)
 
