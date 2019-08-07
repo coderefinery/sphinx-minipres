@@ -27,7 +27,7 @@ function do_scroll(delta) {
     function section_from_element(section) { return section.parentNode; }
 
     var curPos = -10;
-    for(i=0; i<sections.size(); i++) {
+    for(i=0; i<sections.length; i++) {
 	//if ( window.pageYOffset < sections[i].getBoundingClientRect()["top"] ) {
         //console.log(sections[i], sections[i].getBoundingClientRect()["top"])
 	screen_center = window.innerHeight/2;
@@ -45,7 +45,7 @@ function do_scroll(delta) {
 
     // We didn't find anything - we would scroll off the bottom.
     if (curPos == -10) {
-	curPos = sections.size() - 1;
+	curPos = sections.length - 1;
     }
 
     // Target element we want to scroll to
@@ -55,7 +55,7 @@ function do_scroll(delta) {
     // If we ask for -1, go directly to the top
     if ( targetPos == -1 ) {
 	var targetSection = $("body")
-    } else if ( targetPos < 0 || targetPos > (sections.size()-1) ) {
+    } else if ( targetPos < 0 || targetPos > (sections.length-1) ) {
     // if we would scroll past bottom, or above top, do nothing
         return;
     } else {
