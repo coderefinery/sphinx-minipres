@@ -12,17 +12,28 @@
 // NO good way to do this!.  Copy a hack from here
 // https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
 function getQueryParam(name) {
+    if (location.search.indexOf(name+'=') == -1)
+	return null;
     var half = location.search.split(name+"=")[1];
     return half !== undefined ? decodeURIComponent(half.split('&')[0]) : null;
 
 }
+
+// Select heading levels
+var maxHeading = getQueryParam('h')
+if (maxHeading === undefined) maxHeading = 2
+var headingLevels = [];
+for (h=2 ; h<maxHeading+1 ; h++)
+    headingLevels.push("h"+h);
+var sectionSelector = headingLevels.join(", ");
+
 
 function do_scroll(delta) {
     // scroll `delta` sections forward or backwards
 
     //var sections = $(".title, .section");
     //function section_from_element(section) { return section; }
-    var sections = $("h2");
+    var sections = $(sectionSelector);
     console.log(sections);
     function section_from_element(section) { return section.parentNode; }
 
@@ -114,19 +125,26 @@ function minipres() {
             }
     }, true)
 
+    hide()
+    //$("div .section").css('margin-bottom', '50%');
+    $(sectionSelector).css('margin-top', '50%');
+}
+
+function hide() {
+    /* Hide all non-essential elements on the page
+     */
     $(".wy-nav-side").remove();
     $(".wy-nav-content-wrap").css('margin-left', 0);
     $('.rst-versions').remove();  // readthedocs version selector
-    //$("div .section").css('margin-bottom', '50%');
-    $("h2").css('margin-top', '50%');
 }
+
 
 slideshow = minipres
 
 if (window.location.search.indexOf('minipres')  != -1 ||
     window.location.search.indexOf('slideshow') != -1 ) {
     //minipres()
-    window.addEventListener("load", function(){
-	minipres()
-    });
+    window.addEventListener("load", minipres);
+} else if (window.location.search.indexOf('plain')) {
+    window.addEventListener("load", hide);
 }
