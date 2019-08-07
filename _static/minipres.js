@@ -116,6 +116,7 @@ function minipres() {
 
     $(".wy-nav-side").remove();
     $(".wy-nav-content-wrap").css('margin-left', 0);
+    $('.rst-versions').remove();  // readthedocs version selector
     //$("div .section").css('margin-bottom', '50%');
     $("h2").css('margin-top', '50%');
 }
@@ -124,5 +125,8 @@ slideshow = minipres
 
 if (window.location.search.indexOf('minipres')  != -1 ||
     window.location.search.indexOf('slideshow') != -1 ) {
-    minipres()
+    //minipres()
+    window.addEventListener("load", function(){
+	minipres()
+    });
 }
