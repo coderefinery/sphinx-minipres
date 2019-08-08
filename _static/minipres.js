@@ -101,31 +101,32 @@ function do_scroll(delta) {
 
 
 function minipres() {
+    /* Enable the minipres mode:
+       - call the hide() function
+       - set up the scrolling listener
+     */
     document.addEventListener('keydown', function (event) {
-
         switch(event.which) {
         case 37: // left
             do_scroll(-1);
             event.preventDefault();
             return false;
-    	break;
-
+    	    break;
         //case 38: // up
-
         case 39: // right
             do_scroll(+1);
             event.preventDefault();
             return false;
-    	break;
-
+    	    break;
         //case 40: // down
-
         default:
-    	return; // exit this handler for other keys
-            }
+    	    return; // exit this handler for other keys
+        }
     }, true)
 
     hide()
+
+    // Increase space between sections
     //$("div .section").css('margin-bottom', '50%');
     $(sectionSelector).css('margin-top', '50%');
 }
@@ -133,13 +134,17 @@ function minipres() {
 function hide() {
     /* Hide all non-essential elements on the page
      */
+
+    // This is for sphinx_rst_theme and readthedocs
     $(".wy-nav-side").remove();
     $(".wy-nav-content-wrap").css('margin-left', 0);
     $('.rst-versions').remove();  // readthedocs version selector
+
+    // Add other formats here.
 }
 
 
-slideshow = minipres
+var slideshow = minipres;
 
 if (window.location.search.indexOf('minipres')  != -1 ||
     window.location.search.indexOf('slideshow') != -1 ) {
