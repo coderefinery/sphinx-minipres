@@ -11,50 +11,94 @@
 
 // NO good way to do this!.  Copy a hack from here
 // https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
-function getQueryParam(name) {
-    if (location.search.indexOf(name+'=') == -1)
-	return null;
-    var half = location.search.split(name+"=")[1];
-    return half !== undefined ? decodeURIComponent(half.split('&')[0]) : null;
-
-}
+// https://stackoverflow.com/a/2880929
+var urlParams;
+(window.onpopstate = function () {
+    var match,
+        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        query  = window.location.search.substring(1);
+    urlParams = {};
+    while (match = search.exec(query))
+	urlParams[decode(match[1])] = decode(match[2]);
+})();
 
 // Select heading levels
-var maxHeading = getQueryParam('h')
+var maxHeading = urlParams['h']
 if (maxHeading === undefined) maxHeading = 2
 var headingLevels = [];
 for (h=2 ; h<maxHeading+1 ; h++)
     headingLevels.push("h"+h);
 var sectionSelector = headingLevels.join(", ");
 
+// Select heading levels which will be *hidden*
+var hiddenSectionSelector = [ ];
+if ("minh" in urlParams) {
+    for (h=Number(urlParams['minh']) ; h<7 ; h++)
+	hiddenSectionSelector.push("h"+h);
+}
+var hiddenSectionSelector = hiddenSectionSelector.join(", ");
 
-function do_scroll(delta) {
-    // scroll `delta` sections forward or backwards
 
+function section_find() {
+    /* Find all the relevant sections that start each slide.  The
+     * meaning of section in effect *only* matters as much as it can
+     * be parsed by section_top_and_height.
+     */
     //var sections = $(".title, .section");
-    //function section_from_element(section) { return section; }
     var sections = $(sectionSelector);
+    return sections;
+}
+
+function section_top_and_height(targetSection) {
+    /* Return object containging {top, height} for the passed section:
+     * the offset relative to the whole page, and height of the
+     * section (or zero if it can't be found).
+     */
+    var parent = targetSection.parentNode;
+
+    // ReStructuredText / Sphinx sections
+    if (parent.className == "section") {
+	targetSection = parent;
+	var top = $(targetSection).offset()["top"];
+	if (targetSection.getBoundingClientRect)
+	    var height = targetSection.getBoundingClientRect()["height"] || 0;
+	else
+	    var height = 0;
+	return {"top":top, "height":height};
+    }
+
+    // Default, no fancy logic
+    var top = $(targetSection).offset()["top"];
+    var height = 0;
+    console.log("default mode:", top, height)
+    return {"top":top, "height":height};
+
+}
+
+
+function switch_slide(delta) {
+    /* scroll `delta` sections forward or backwards
+     */
+    var sections = section_find();
     console.log(sections);
-    function section_from_element(section) { return section.parentNode; }
 
     var curPos = -10;
+    // Iterate all sections until we find the last one *above* the
+    // center of the screen.
     for(i=0; i<sections.length; i++) {
-	//if ( window.pageYOffset < sections[i].getBoundingClientRect()["top"] ) {
-        //console.log(sections[i], sections[i].getBoundingClientRect()["top"])
 	screen_center = window.innerHeight/2;
 	element_top = sections[i].getBoundingClientRect()["top"]
-	element_bottom = sections[i].getBoundingClientRect()["bottom"]
         if ( element_top < screen_center ) {
             continue;
         }
-        //console.info(sections[i], sections[i].getBoundingClientRect()["top"]);
         curPos = i-1;
-        //console.info(sections[curPos])
         break;
     }
     console.log("cur=", curPos);
 
-    // We didn't find anything - we would scroll off the bottom.
+    // We didn't find anything - we are at the bottom of the page.
     if (curPos == -10) {
 	curPos = sections.length - 1;
     }
@@ -63,30 +107,33 @@ function do_scroll(delta) {
     var targetPos = curPos + delta;
     console.log("target=", targetPos);
 
-    // If we ask for -1, go directly to the top
+    // If we ask for -1, go directly to the top of the whole page.
     if ( targetPos == -1 ) {
-	var targetSection = $("body")
-    } else if ( targetPos < 0 || targetPos > (sections.length-1) ) {
+	//var targetSection = $("body")
+	$('html, body').animate({
+            scrollTop: 0
+	}, 'fast');
+	return;
+    }
+
+    if ( targetPos < 0 || targetPos > (sections.length-1) ) {
     // if we would scroll past bottom, or above top, do nothing
         return;
-    } else {
-	console.log('xxxxxx');
-	var targetSection = sections[targetPos];
-	var targetSection = section_from_element(targetSection);
     }
+
+    console.log('xxxxxx');
+    var targetSection = sections[targetPos];
     console.log(targetSection, typeof(targetSection));
 
-    //var top = targetSection.getBoundingClientRect()["y"];
-    var top = $(targetSection).offset()["top"];
-    if (targetSection.getBoundingClientRect)
-	var height = targetSection.getBoundingClientRect()["height"] || 0;
-    else
-	var height = 0;
+    // Return targetSection top and height
+    var secProperties = section_top_and_height(targetSection);
+    var top = secProperties['top'];
+    var height = secProperties['height']
     var win_height = window.innerHeight;
     //console.info(top, height, win_height)
 
     var scroll_to = 0;
-    if (height >= win_height) {
+    if (height >= win_height || height == 0) {
         scroll_to = top;
     } else {
         scroll_to = top - (win_height-height)/3.;
@@ -108,13 +155,13 @@ function minipres() {
     document.addEventListener('keydown', function (event) {
         switch(event.which) {
         case 37: // left
-            do_scroll(-1);
+            switch_slide(-1);
             event.preventDefault();
             return false;
     	    break;
         //case 38: // up
         case 39: // right
-            do_scroll(+1);
+            switch_slide(+1);
             event.preventDefault();
             return false;
     	    break;
@@ -129,6 +176,15 @@ function minipres() {
     // Increase space between sections
     //$("div .section").css('margin-bottom', '50%');
     $(sectionSelector).css('margin-top', '50%');
+
+    // Reduce size of other sections
+    if (hiddenSectionSelector.length > 0) {
+	var hideNodes = $(hiddenSectionSelector);
+	hideNodes = hideNodes.map(sectionSelector);
+	for (node in hideNodes)
+	    node.css['transform'] = 'scale(.5)';
+            node.css['transform-origin'] = 'top center';
+    }
 }
 
 function hide() {
