@@ -33,9 +33,10 @@ for (h=2 ; h<maxHeading+1 ; h++)
 var sectionSelector = headingLevels.join(", ");
 
 // Select heading levels which will be *hidden*
+var minHeading = urlParams['minh'];
 var hiddenSectionSelector = [ ];
-if ("minh" in urlParams) {
-    for (h=Number(urlParams['minh']) ; h<7 ; h++)
+if (minHeading) {
+    for (h=Number(minHeading) ; h<7 ; h++)
 	hiddenSectionSelector.push("h"+h);
 }
 var hiddenSectionSelector = hiddenSectionSelector.join(", ");
@@ -177,13 +178,25 @@ function minipres() {
     //$("div .section").css('margin-bottom', '50%');
     $(sectionSelector).css('margin-top', '50%');
 
-    // Reduce size of other sections
+    // Reduce size/color of other sections
     if (hiddenSectionSelector.length > 0) {
-	var hideNodes = $(hiddenSectionSelector);
-	hideNodes = hideNodes.map(sectionSelector);
-	for (node in hideNodes)
-	    node.css['transform'] = 'scale(.5)';
-            node.css['transform-origin'] = 'top center';
+        var hideNodes = $(hiddenSectionSelector);
+        console.log(typeof hideNodes, hideNodes);
+        for (node in hideNodes) {
+            console.log("a", typeof node, node);
+            node = hideNodes[node];  // what's right way to iterate values?
+            console.log("b", typeof node, node);
+            if (node.parentNode && node.parentNode.className == "section") {
+                node = node.parentNode;
+                console.log("c", typeof node, node);
+                //node.css['transform'] = 'scale(.5)';
+                //node.css['transform-origin'] = 'top center';
+                $(node).css('color', 'lightgrey');
+                //$(node).css('font-size', '20%');
+                //$(node).css('visibility', 'collapse');
+                //ntahousnatouhasno;
+            }
+        }
     }
 }
 
@@ -206,6 +219,6 @@ if (window.location.search.indexOf('minipres')  != -1 ||
     window.location.search.indexOf('slideshow') != -1 ) {
     //minipres()
     window.addEventListener("load", minipres);
-} else if (window.location.search.indexOf('plain')) {
+} else if (window.location.search.indexOf('plain') != -1) {
     window.addEventListener("load", hide);
 }
