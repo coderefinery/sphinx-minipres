@@ -216,7 +216,9 @@ function hide() {
 var slideshow = minipres;
 
 if (window.location.search.indexOf('minipres')  != -1 ||
-    window.location.search.indexOf('slideshow') != -1 ) {
+    window.location.search.indexOf('slideshow') != -1 ||
+    window.location.search.indexOf('pres') != -1
+   ) {
     //minipres()
     window.addEventListener("load", minipres);
 } else if (window.location.search.indexOf('plain') != -1) {
