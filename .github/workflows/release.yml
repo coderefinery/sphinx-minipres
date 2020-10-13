@@ -1,0 +1,47 @@
+name: Pylint
+
+env:
+  MOD_NAME: sphinx_minipres
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      #with:
+      #  python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install twine wheel
+    - name: Build
+      run: |
+        python setup.py sdist wheel
+    - name: Check version
+      run: |
+        pip install .
+        MOD_VERSION=$(python -c "import $MOD_NAME ; print($MOD_NAME.__version__)"
+        echo $MOD_VERSION
+        TAG_VERSION=${{ github.ref }}
+        echo $TAG_VERSION
+        TAG_VERSION=${TAG_VERSION##refs/tags/}   # remove leading 'refs/tags/'
+        if [ "$MOD_VERSION" != "$TAG_VERSION" ] ; then
+          echo "::error::Module version ($MOD_VERSION) des not match tag version ($TAG_VERSION)"
+          exit 1
+        fi
+    - name: Publish on PyPI
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+      uses: pypa/gh-action-pypi-publish@v1.4.1
+      with:
+        user: __token__
+        password: ${{ secrets.pypi_password }}
+
