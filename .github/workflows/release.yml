@@ -1,4 +1,4 @@
-name: Pylint
+name: PyPI release
 
 env:
   MOD_NAME: sphinx_minipres
@@ -13,7 +13,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
     - uses: actions/checkout@v2
+
     - name: Set up Python
       uses: actions/setup-python@v2
       #with:
@@ -23,9 +25,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install twine wheel
+
     - name: Build
       run: |
         python setup.py sdist wheel
+
+    # Verify that the git tag has the same version as the python
+    # project version.
     - name: Check version
       run: |
         pip install .
@@ -38,6 +44,7 @@ jobs:
           echo "::error::Module version ($MOD_VERSION) des not match tag version ($TAG_VERSION)"
           exit 1
         fi
+
     - name: Publish on PyPI
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@v1.4.1
