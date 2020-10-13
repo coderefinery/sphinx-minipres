@@ -5,7 +5,7 @@ def setup(app):
     app.connect('builder-inited', lambda app: app.config.html_static_path.append(static_path))
 
     #app.add_stylesheet("minipres.css")
-    app.add_javascript('minipres3.js')
+    app.add_javascript('minipres.js')
 
     return {
         'version': '0.1',
