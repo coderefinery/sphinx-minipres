@@ -3,9 +3,14 @@ import setuptools
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
+version_ns = { }
+exec(open('sphinx_minipres/_version.py').read(), version_ns)
+version = version_ns['__version__']
+del version_ns
+
 setuptools.setup(
     name="sphinx_minipres",
-    version="0.0.1.dev0",
+    version=version,
     author="Richard Darst",
     #author_email="",
     description="Sphinx extension to turn any web page into a lightweight presentation",

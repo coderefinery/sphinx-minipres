@@ -1,5 +1,7 @@
 from os.path import abspath, join, dirname
 
+from ._version import __version__
+
 def setup(app):
     static_path = abspath(join(dirname(__file__), '_static'))
     app.connect('builder-inited', lambda app: app.config.html_static_path.append(static_path))
