@@ -15,7 +15,7 @@ setuptools.setup(
     #author_email="",
     description="Sphinx extension to turn any web page into a lightweight presentation",
     long_description=long_description,
-    url="https://github.com/rkdarst/sphinx-minipres",
+    url="https://github.com/coderefinery/sphinx-minipres",
     packages=setuptools.find_packages(),
     package_data={
         "sphinx_minipres": ['_static/*'],
