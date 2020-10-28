@@ -215,12 +215,9 @@ function hide() {
 
 var slideshow = minipres;
 
-if (window.location.search.indexOf('minipres')  != -1 ||
-    window.location.search.indexOf('slideshow') != -1 ||
-    window.location.search.indexOf('pres') != -1
-   ) {
+if (window.location.search.match(/[?&](minipres|slideshow|pres)([=&]|$)/) ) {
     //minipres()
     window.addEventListener("load", minipres);
-} else if (window.location.search.indexOf('plain') != -1) {
+} else if (window.location.search.match(/[?&](plain)([=&]|$)/) ) {
     window.addEventListener("load", hide);
 }
