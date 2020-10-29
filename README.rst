@@ -11,6 +11,10 @@ unnecessary elements, increasing space between the sections, and
 adding a direct scroll (using left and right arrow keys) between
 sections.
 
+Right now it is distributed as a `Sphinx documentation generator
+<https://www.sphinx-doc.org/>`__ extension since that's how the
+authors use it, but ``minipres.js`` should be usable by others.
+
 Examples:
 
 * `minipres mode
