@@ -11,6 +11,14 @@ unnecessary elements, increasing space between the sections, and
 adding a direct scroll (using left and right arrow keys) between
 sections.
 
+Examples:
+
+* `minipres mode
+  <https://scicomp.aalto.fi/scicomp/zen-of-scicomp/?minipres>`__, vs
+  `normal page <https://scicomp.aalto.fi/scicomp/zen-of-scicomp/>`__,
+  vs `plain mode
+  <https://scicomp.aalto.fi/scicomp/zen-of-scicomp/?plain>`__.  In
+  minipres mode, try pushing left and right arrow keys.
 
 
 Sphinx extension usage
